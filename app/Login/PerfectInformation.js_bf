@@ -1,0 +1,72 @@
+import React, { Component } from 'react';
+import { 
+	StyleSheet, 
+	Text, 
+	View,
+	Alert,
+	Button,
+	TouchableOpacity
+} from 'react-native';
+
+import { MapView } from 'react-native-amap3d'
+
+import fetch from '../routers/Fetch';
+const Fetch=new fetch();
+export default class PerfectInformation extends Component{
+	constructor(props) {
+    	super(props);
+    	this.state = {
+			showsLocationButton: true,
+			longitude:'',
+			latitude:'',
+    	};
+  	}
+	//经纬度
+	_Map=(nativeEvent)=>{
+    	this.setState({
+        	longitude: nativeEvent.longitude ,		
+        	latitude:nativeEvent.latitude
+      	});
+	}		
+	_Position=()=>{
+		let longitude=this.state.longitude;
+		let latitude =this.state.latitude;
+		let key='389880a06e3f893ea46036f030c94700';
+              	
+        //逆地址编码
+		Fetch.get('http://restapi.amap.com/v3/geocode/regeo?key='+key+'&location='+longitude+','+latitude+'','',function (set) {
+		    console.log(set.regeocode);
+		    console.log(set.regeocode.formatted_address);
+		            
+		    alert(set.regeocode.formatted_address);
+		            
+    	}) 
+	}
+  	render() {
+	    return (
+	      	<View style={StyleSheet.absoluteFill}>
+	      		<Button
+	      			title="获取地理位置"
+	      			onPress={this._Position}
+	      		/>
+		        <MapView
+		          	locationEnabled={this.state.showsLocationButton}
+		          	showsLocationButton={this.state.showsLocationButton}
+		          	style={styles.map}
+		          	onLocation={({nativeEvent}) =>
+    					this._Map(nativeEvent)
+    				}
+		          	
+		        />
+	      	</View>
+	    )
+  	}
+	
+
+}
+
+const styles = StyleSheet.create({
+	map: {
+	   flex: 1,
+	}
+});
